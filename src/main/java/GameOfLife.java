@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,16 +36,10 @@ public class GameOfLife {
 		return result;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		GameOfLife gol = new GameOfLife();
 		
-		IInputMethod input;
-
-		if(args.length == 1)
-			input = new InputMethod(args[0]);
-		else
-			input = new InputMethod();
-		
+		IInputMethod input= new InputMethod(args);
 		String exit = "";
 
 		gol.setNewList(input.getPresetCells());

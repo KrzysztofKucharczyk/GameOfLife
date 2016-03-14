@@ -6,26 +6,29 @@ import java.util.Scanner;
 
 public class InputMethod implements IInputMethod {
 
-	private Scanner fileReader;
-	private Scanner userInput = new Scanner(System.in);
+	private final Scanner fileReader;
+	private final Scanner userInput = new Scanner(System.in);
 
-	public InputMethod() {
-		fileReader = new Scanner(System.in);
+	public InputMethod(String[] args) throws FileNotFoundException {
+		if (args.length == 1)
+			fileReader = setFileAsSource(args[0]);
+		else
+			fileReader = setStdIOAsSource();
 	}
 
-	public InputMethod(String filename) {
-		try {
-			fileReader = new Scanner(new File(filename));
-		} catch (FileNotFoundException e) {
-			System.out.println("Cannot load file.\n");
-		}
+	private Scanner setFileAsSource(String filename) throws FileNotFoundException {
+			return new Scanner(new File(filename));
+	}
+	
+	private Scanner setStdIOAsSource() {
+		return new Scanner(System.in);
 	}
 
 	public List<ICell> getPresetCells() {
-		int amountOfInputs = fileReader.nextInt();
+		int amountOfInputData = fileReader.nextInt();
 		List<ICell> presetCells = new ArrayList<ICell>();
 
-		for (int i = 0; i < amountOfInputs; i++) {
+		for (int i = 0; i < amountOfInputData; i++) {
 			int x = fileReader.nextInt();
 			int y = fileReader.nextInt();
 			presetCells.add(new Cell(x, y));
@@ -41,7 +44,5 @@ public class InputMethod implements IInputMethod {
 	public void closeInput() {
 		fileReader.close();
 		userInput.close();
-
 	}
-
 }
