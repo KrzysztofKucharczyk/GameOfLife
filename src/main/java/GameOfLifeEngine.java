@@ -15,10 +15,8 @@ public class GameOfLifeEngine implements IEngine {
 		List<ICell> temp = new ArrayList<ICell>();
 
 		for (ICell cell : emptySpaces) {
-			if (getNeighbourhoodWithoutEmpty(cell) == 3) {
+			if (getNeighbourhoodWithoutEmpty(cell) == 3)
 				temp.add(cell);
-				System.out.println("Another one for the Emperium of Men. | " + cell);
-			}
 		}
 		emptySpaces.clear();
 		

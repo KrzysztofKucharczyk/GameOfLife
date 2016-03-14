@@ -1,36 +1,23 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class GameOfLife {
 
 	private List<ICell> cells = new ArrayList<ICell>();
-	
-	private Scanner scanner = new Scanner(System.in);
-
-	public void getPresetCells() {
-		int amountOfInputs = scanner.nextInt();
-
-		for (int i = 0; i < amountOfInputs; i++) {
-			int x = scanner.nextInt();
-			int y = scanner.nextInt();
-			cells.add(new Cell(x, y));
-		}
-	}
 
 	public void setNewList(List<ICell> cells) {
 		this.cells = cells;
 	}
-	
+
 	public List<ICell> live() {
 		IEngine engine = new GameOfLifeEngine(cells);
 		List<ICell> newList = new ArrayList<ICell>();
-		
-		for(ICell cell : cells) {
+
+		for (ICell cell : cells) {
 			int neighbours = engine.getNeighbourhood(cell);
 			if ((neighbours == 2 || neighbours == 3))
 				newList.add(new Cell(cell.getX(), cell.getY()));
-			
+
 		}
 		newList.addAll(engine.reproduction());
 
@@ -50,18 +37,24 @@ public class GameOfLife {
 
 	public static void main(String[] args) {
 		GameOfLife gol = new GameOfLife();
-		gol.getPresetCells();
-		Scanner scanner = new Scanner(System.in);
-		System.out.println(gol.toString());
-		String exit = "";
 		
+		IInputMethod input;
+
+		if(args.length == 1)
+			input = new InputMethod(args[0]);
+		else
+			input = new InputMethod();
+		
+		String exit = "";
+
+		gol.setNewList(input.getPresetCells());
+		System.out.println(gol.toString());
+
 		while (!exit.equals("Exit")) {
 			gol.setNewList(gol.live());
 			System.out.println(gol.toString());
-			exit = scanner.next();
+			exit = input.getUserInput();
 		}
-		
-		scanner.close();
+		input.closeInput();
 	}
-
 }
