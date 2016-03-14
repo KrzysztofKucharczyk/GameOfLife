@@ -1,10 +1,12 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class GameOfLife {
 
-	private int[][] tab = new int[10][10];
+	private List<ICell> cells = new ArrayList<ICell>();
+	
 	private Scanner scanner = new Scanner(System.in);
-	private IEngine engine = new GameOfLifeEngine(tab);
 
 	public void getPresetCells() {
 		int amountOfInputs = scanner.nextInt();
@@ -12,50 +14,35 @@ public class GameOfLife {
 		for (int i = 0; i < amountOfInputs; i++) {
 			int x = scanner.nextInt();
 			int y = scanner.nextInt();
-			tab[x][y] = 1;
+			cells.add(new Cell(x, y));
 		}
 	}
 
-	private void setTab(int[][] tab, int i, int j) {
-		tab[i][j] = 1;
+	public void setNewList(List<ICell> cells) {
+		this.cells = cells;
 	}
-
-	private void unsetTab(int[][] tab, int i, int j) {
-		tab[i][j] = 0;
-	}
-
-	public void getTab(int[][] tab) {
-		this.tab = tab;
-	}
-
-	public int[][] live() {
-		int[][] newTab = new int[10][10];
-
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				int neighbours = engine.getNeighbourhood(i, j);
-				if (neighbours < 2)
-					unsetTab(newTab, i, j);
-				else if ((neighbours == 2 || neighbours == 3) && tab[i][j] == 1)
-					setTab(newTab, i, j);
-				else if (neighbours > 3 && tab[i][j] == 1)
-					unsetTab(newTab, i, j);
-				else if (neighbours == 3 && tab[i][j] == 0)
-					setTab(newTab, i, j);
-
-			}
+	
+	public List<ICell> live() {
+		IEngine engine = new GameOfLifeEngine(cells);
+		List<ICell> newList = new ArrayList<ICell>();
+		
+		for(ICell cell : cells) {
+			int neighbours = engine.getNeighbourhood(cell);
+			if ((neighbours == 2 || neighbours == 3))
+				newList.add(new Cell(cell.getX(), cell.getY()));
+			
 		}
-		return newTab;
+		newList.addAll(engine.reproduction());
+
+		return newList;
 	}
 
 	@Override
 	public String toString() {
 		String result = "";
-
 		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				result += tab[i][j] + " ";
-			}
+			for (int j = 0; j < 10; j++)
+				result += (cells.contains(new Cell(i, j))) ? "1 " : "0 ";
 			result += "\n";
 		}
 		return result;
@@ -69,7 +56,7 @@ public class GameOfLife {
 		String exit = "";
 		
 		while (!exit.equals("Exit")) {
-			gol.getTab(gol.live());
+			gol.setNewList(gol.live());
 			System.out.println(gol.toString());
 			exit = scanner.next();
 		}

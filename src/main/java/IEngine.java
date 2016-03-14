@@ -1,4 +1,7 @@
+import java.util.List;
 
 public interface IEngine {
-	public int getNeighbourhood(int i, int j);
+	public int getNeighbourhood(ICell cell);
+	public List<ICell> reproduction();
 }
+  
