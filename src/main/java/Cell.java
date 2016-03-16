@@ -33,7 +33,7 @@ public class Cell implements ICell {
 	
 	@Override
 	public String toString() {
-		return new String("(x: " + this.x + " y: " + y + ")");
+		return new String("(x: " + this.x + ", y: " + y + ")");
 	}
 
 }

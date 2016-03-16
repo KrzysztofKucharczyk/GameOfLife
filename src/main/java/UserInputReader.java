@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class UserInput implements IInputMethod<String>{
+public class UserInputReader implements IInputMethod<String>{
 	private final Scanner userInput = new Scanner(System.in);
 	
 	public String getInput() {

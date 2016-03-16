@@ -2,11 +2,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class InputMethod implements IInputMethod<Integer> {
+public class SourceDataReader implements IInputMethod<Integer> {
 
 	private final Scanner sourceReader;
 
-	public InputMethod(String[] args) throws FileNotFoundException {
+	public SourceDataReader(String[] args) throws FileNotFoundException {
 		if (args.length == 1)
 			sourceReader = setFileAsSource(args[0]);
 		else
@@ -14,9 +14,9 @@ public class InputMethod implements IInputMethod<Integer> {
 	}
 
 	private Scanner setFileAsSource(String filename) throws FileNotFoundException {
-			return new Scanner(new File(filename));
+		return new Scanner(new File(filename));
 	}
-	
+
 	private Scanner setStdIOAsSource() {
 		return new Scanner(System.in);
 	}
