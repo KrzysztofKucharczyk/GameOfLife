@@ -3,447 +3,86 @@ import java.util.List;
 
 public class GameOfLifeEngine implements IEngine {
 
-	private List<ICell> cells;
-	private List<ICell> emptySpaces;
+	private List<ICell> livingCells;
+	private List<ICell> deadCellsAroundLivingOnes;
 
 	public GameOfLifeEngine(List<ICell> cells) {
-		this.cells = cells;
-		emptySpaces = new ArrayList<ICell>();
+		this.livingCells = cells;
+		deadCellsAroundLivingOnes = new ArrayList<ICell>();
+	}
+
+	public List<ICell> checkLivingCells() {
+		List<ICell> newList = new ArrayList<ICell>();
+
+		for (ICell cell : livingCells) {
+			int neighbours = findAllLivingCellsAroundCoordinates(cell.getX(), cell.getY());
+			if ((neighbours == 2 || neighbours == 3))
+				newList.add(new Cell(cell.getX(), cell.getY()));
+		}
+		return newList;
 	}
 
 	public List<ICell> reproduction() {
-		List<ICell> temp = new ArrayList<ICell>();
+		List<ICell> reproducedCells = new ArrayList<ICell>();
+		for (ICell cell : livingCells)
+			findAllDeadCellsAroundCoordinates(cell.getX(), cell.getY());
 
-		for (ICell cell : emptySpaces) {
-			if (getNeighbourhoodWithoutEmpty(cell) == 3)
-				temp.add(cell);
+		for (ICell cell : deadCellsAroundLivingOnes) {
+			if (findAllLivingCellsAroundCoordinates(cell.getX(), cell.getY()) == 3)
+				reproducedCells.add(cell);
 		}
-		emptySpaces.clear();
-		
-		return temp;
+
+		deadCellsAroundLivingOnes.clear();
+		return reproducedCells;
 	}
 
 	private void addToEmptySpaces(ICell cell) {
-		if (!emptySpaces.contains(cell))
-			emptySpaces.add(cell);
+		if (!deadCellsAroundLivingOnes.contains(cell))
+			deadCellsAroundLivingOnes.add(cell);
 	}
 
-	public int getNeighbourhood(ICell cell) {
-		
+	private int findAllLivingCellsAroundCoordinates(int i, int j) {
 		int neighbours = 0;
-
-		if (cell.getX() == 0 && cell.getY() == 0)
-			neighbours = checkUpperLeft(cell);
-		else if (cell.getX() == 9 && cell.getY() == 0)
-			neighbours = checkUpperRight(cell);
-		else if (cell.getX() > 0 && cell.getY() == 0)
-			neighbours = checkUpperSection(cell);
-		else if (cell.getX() == 0 && cell.getY() == 9)
-			neighbours = checkLowerLeft(cell);
-		else if (cell.getX() == 9 && cell.getY() < 9)
-			neighbours = checkRightSection(cell);
-		else if (cell.getX() == 0 && cell.getY() < 9)
-			neighbours = checkLeftSection(cell);
-		else if (cell.getX() == 9 && cell.getY() == 9)
-			neighbours = checkLowerRight(cell);
-		else if (cell.getX() > 0 && cell.getY() == 9)
-			neighbours = checkLowerSection(cell);
-		else
-			neighbours = checkCenter(cell);
-
+		if (livingCells.contains(new Cell(i - 1, j - 1)))
+			neighbours++;
+		if (livingCells.contains(new Cell(i, j - 1)))
+			neighbours++;
+		if (livingCells.contains(new Cell(i + 1, j - 1)))
+			neighbours++;
+		if (livingCells.contains(new Cell(i - 1, j)))
+			neighbours++;
+		if (livingCells.contains(new Cell(i + 1, j)))
+			neighbours++;
+		if (livingCells.contains(new Cell(i - 1, j + 1)))
+			neighbours++;
+		if (livingCells.contains(new Cell(i, j + 1)))
+			neighbours++;
+		if (livingCells.contains(new Cell(i + 1, j + 1)))
+			neighbours++;
 		return neighbours;
 	}
 
-	public int getNeighbourhoodWithoutEmpty(ICell cell) {
+	private int findAllDeadCellsAroundCoordinates(int i, int j) {
 		int neighbours = 0;
-
-		if (cell.getX() == 0 && cell.getY() == 0)
-			neighbours = checkUpperLeftWithoutEmpty(cell);
-		else if (cell.getX() == 9 && cell.getY() == 0)
-			neighbours = checkUpperRightWithoutEmpty(cell);
-		else if (cell.getX() > 0 && cell.getY() == 0)
-			neighbours = checkUpperSectionWithoutEmpty(cell);
-		else if (cell.getX() == 0 && cell.getY() == 9)
-			neighbours = checkLowerLeftWithoutEmpty(cell);
-		else if (cell.getX() == 9 && cell.getY() < 9)
-			neighbours = checkRightSectionWithoutEmpty(cell);
-		else if (cell.getX() == 0 && cell.getY() < 9)
-			neighbours = checkLeftSectionWithoutEmpty(cell);
-		else if (cell.getX() == 9 && cell.getY() == 9)
-			neighbours = checkLowerRightWithoutEmpty(cell);
-		else if (cell.getX() > 0 && cell.getY() == 9)
-			neighbours = checkLowerSectionWithoutEmpty(cell);
-		else
-			neighbours = checkCenterWithoutEmpty(cell);
-
-		return neighbours;
-	}
-
-	private int checkUpperLeft(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j));
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j));
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(cell);
-		return neighbours;
-	}
-
-	private int checkUpperRight(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j + 1));
-		if (cells.contains(new Cell(i - 1, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j + 1));
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		else
+		if (!livingCells.contains(new Cell(i - 1, j - 1)))
+			addToEmptySpaces(new Cell(i - 1, j - 1));
+		if (!livingCells.contains(new Cell(i, j - 1)))
+			addToEmptySpaces(new Cell(i, j - 1));
+		if (!livingCells.contains(new Cell(i + 1, j - 1)))
+			addToEmptySpaces(new Cell(i + 1, j - 1));
+		if (!livingCells.contains(new Cell(i - 1, j)))
 			addToEmptySpaces(new Cell(i - 1, j));
-		return neighbours;
-	}
-
-	private int checkUpperSection(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j));
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		else
+		if (!livingCells.contains(new Cell(i + 1, j)))
 			addToEmptySpaces(new Cell(i + 1, j));
-		if (cells.contains(new Cell(i - 1, j + 1)))
-			neighbours++;
-		else
+		if (!livingCells.contains(new Cell(i - 1, j + 1)))
 			addToEmptySpaces(new Cell(i - 1, j + 1));
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		else
+		if (!livingCells.contains(new Cell(i, j + 1)))
 			addToEmptySpaces(new Cell(i, j + 1));
-		if (cells.contains(new Cell(i + 1, j + 1)))
-			neighbours++;
-		else
+		if (!livingCells.contains(new Cell(i + 1, j + 1)))
 			addToEmptySpaces(new Cell(i + 1, j + 1));
 		return neighbours;
 	}
 
-	private int checkLowerLeft(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j - 1));
-		if (cells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j - 1));
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j));
-		return neighbours;
-	}
+	// -----------------------------------
 
-	private int checkRightSection(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j - 1));
-		if (cells.contains(new Cell(i - 1, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j - 1));
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j));
-		if (cells.contains(new Cell(i - 1, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j + 1));
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j + 1));
-		return neighbours;
-	}
-
-	private int checkLeftSection(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j - 1));
-		if (cells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j - 1));
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j));
-		if (cells.contains(new Cell(i + 1, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j + 1));
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j + 1));
-		return neighbours;
-	}
-
-	private int checkLowerRight(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i - 1, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j - 1));
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j - 1));
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j));
-		return neighbours;
-	}
-
-	private int checkLowerSection(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i - 1, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j - 1));
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j - 1));
-		if (cells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j - 1));
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j));
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j));
-		return neighbours;
-	}
-
-	private int checkCenter(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i - 1, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j - 1));
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j - 1));
-		if (cells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j - 1));
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j));
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j));
-		if (cells.contains(new Cell(i - 1, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i - 1, j + 1));
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i, j + 1));
-		if (cells.contains(new Cell(i + 1, j + 1)))
-			neighbours++;
-		else
-			addToEmptySpaces(new Cell(i + 1, j + 1));
-		return neighbours;
-	}
-
-	private int checkUpperLeftWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		return neighbours;
-	}
-
-	private int checkUpperRightWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j + 1)))
-			addToEmptySpaces(new Cell(i - 1, j + 1));
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		return neighbours;
-	}
-
-	private int checkUpperSectionWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j + 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j + 1)))
-			neighbours++;
-		return neighbours;
-	}
-
-	private int checkLowerLeftWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		return neighbours;
-	}
-
-	private int checkRightSectionWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j + 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		return neighbours;
-	}
-
-	private int checkLeftSectionWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j + 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		return neighbours;
-	}
-
-	private int checkLowerRightWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i - 1, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		return neighbours;
-	}
-
-	private int checkLowerSectionWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i - 1, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		return neighbours;
-	}
-
-	private int checkCenterWithoutEmpty(ICell cell) {
-		int neighbours = 0;
-		int i = cell.getX();
-		int j = cell.getY();
-		if (cells.contains(new Cell(i - 1, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		if (cells.contains(new Cell(i - 1, j + 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		if (cells.contains(new Cell(i + 1, j + 1)))
-			neighbours++;
-		return neighbours;
-	}
 }

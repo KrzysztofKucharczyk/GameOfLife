@@ -3,53 +3,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameOfLife {
-
-	private List<ICell> cells = new ArrayList<ICell>();
+	private List<ICell> livingCells = new ArrayList<ICell>();
 
 	public void setNewList(List<ICell> cells) {
-		this.cells = cells;
+		this.livingCells = cells;
+		if(livingCells.isEmpty())
+			System.out.println("No more living cells.");
+	}
+
+	public List<ICell> getLivingCells() {
+		return livingCells;
 	}
 
 	public List<ICell> live() {
-		IEngine engine = new GameOfLifeEngine(cells);
+		IEngine engine = new GameOfLifeEngine(livingCells);
 		List<ICell> newList = new ArrayList<ICell>();
 
-		for (ICell cell : cells) {
-			int neighbours = engine.getNeighbourhood(cell);
-			if ((neighbours == 2 || neighbours == 3))
-				newList.add(new Cell(cell.getX(), cell.getY()));
-
-		}
+		// Checks if living cells will continue to live
+		newList.addAll(engine.checkLivingCells());
+		// Finds new cells reproduced by 3 nearby cells
 		newList.addAll(engine.reproduction());
 
 		return newList;
 	}
 
-	@Override
-	public String toString() {
-		String result = "";
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++)
-				result += (cells.contains(new Cell(i, j))) ? "1 " : "0 ";
-			result += "\n";
+	public List<ICell> getPresetCells(IInputMethod<Integer> fileReader) {
+		int amountOfInputData = fileReader.getInput();
+		List<ICell> presetCells = new ArrayList<ICell>();
+
+		for (int i = 0; i < amountOfInputData; i++) {
+			int x = fileReader.getInput();
+			int y = fileReader.getInput();
+			presetCells.add(new Cell(x, y));
 		}
-		return result;
+
+		return presetCells;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException {
 		GameOfLife gol = new GameOfLife();
-		
-		IInputMethod input= new InputMethod(args);
-		String exit = "";
+		IInputMethod<Integer> sourceReader = new InputMethod(args);
+		IInputMethod<String> userInput = new UserInput();
+		IDisplayer gameOfLifeDisplayer;
+		gol.setNewList(gol.getPresetCells(sourceReader));
+		gameOfLifeDisplayer = new Displayer(gol.getLivingCells());
 
-		gol.setNewList(input.getPresetCells());
-		System.out.println(gol.toString());
-
-		while (!exit.equals("Exit")) {
+		do {
+			gameOfLifeDisplayer.display();
 			gol.setNewList(gol.live());
-			System.out.println(gol.toString());
-			exit = input.getUserInput();
-		}
-		input.closeInput();
+			gameOfLifeDisplayer.setNewCellsList(gol.getLivingCells());
+		} while (!(userInput.getInput().equals("q") || (gol.getLivingCells().isEmpty())));
+
+		sourceReader.closeInput();
+		userInput.closeInput();
 	}
 }
