@@ -17,10 +17,10 @@ public class GameOfLifeTest {
 		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(outContent));
 		GameOfLife gameOfLife = new GameOfLife();
-		List<ICell> testList = new ArrayList<ICell>();
+		List<ILivingCell> testList = new ArrayList<ILivingCell>();
 		
 		// when
-		gameOfLife.setNewList(testList);
+		gameOfLife.setNewCellsList(testList);
 		
 		// then
 		assertEquals("No more living cells.\n", outContent.toString());
@@ -32,11 +32,11 @@ public class GameOfLifeTest {
 		ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(outContent));
 		GameOfLife gameOfLife = new GameOfLife();
-		List<ICell> testList = new ArrayList<ICell>();
-		testList.add(new Cell(10, 11));
+		List<ILivingCell> testList = new ArrayList<ILivingCell>();
+		testList.add(new LivingCell(10, 11));
 		
 		// when
-		gameOfLife.setNewList(testList);
+		gameOfLife.setNewCellsList(testList);
 		
 		// then
 		assertEquals(10, testList.get(0).getX());
@@ -53,11 +53,11 @@ public class GameOfLifeTest {
 		IInputMethod<Integer> testSourceReader = new SourceDataReader(args);
 		
 		// when
-		List<ICell> result = gameOfLife.getPresetCells(testSourceReader);
+		List<ILivingCell> result = gameOfLife.getPresetCells(testSourceReader);
 		
 		// then 
-		assertTrue(result.get(0).equals(new Cell(1, 1)));
-		assertTrue(result.get(1).equals(new Cell(2, 2)));	
+		assertTrue(result.get(0).equals(new LivingCell(1, 1)));
+		assertTrue(result.get(1).equals(new LivingCell(2, 2)));	
 	}
 	
 	@Test
@@ -71,26 +71,26 @@ public class GameOfLifeTest {
 		IInputMethod<Integer> testSourceReader = new SourceDataReader(args);
 		
 		// when
-		List<ICell> result = gameOfLife.getPresetCells(testSourceReader);
+		List<ILivingCell> result = gameOfLife.getPresetCells(testSourceReader);
 		
 		// then 
-		assertTrue(result.get(0).equals(new Cell(1, 3)));
-		assertTrue(result.get(1).equals(new Cell(1, 5)));
-		assertTrue(result.get(2).equals(new Cell(2, 3)));
-		assertTrue(result.get(3).equals(new Cell(2, 5)));	
+		assertTrue(result.get(0).equals(new LivingCell(1, 3)));
+		assertTrue(result.get(1).equals(new LivingCell(1, 5)));
+		assertTrue(result.get(2).equals(new LivingCell(2, 3)));
+		assertTrue(result.get(3).equals(new LivingCell(2, 5)));	
 	}
 	
 	@Test
 	public void should_return_empty_list_of_living_cells() {
 		// given
 		GameOfLife gameOfLife = new GameOfLife();
-		List<ICell> cells = new ArrayList<ICell>();
-		cells.add(new Cell(10, 10));
-		cells.add(new Cell(10, 11));
-		gameOfLife.setNewList(cells);
+		List<ILivingCell> cells = new ArrayList<ILivingCell>();
+		cells.add(new LivingCell(10, 10));
+		cells.add(new LivingCell(10, 11));
+		gameOfLife.setNewCellsList(cells);
 		
 		// when
-		List<ICell> result = gameOfLife.live();
+		List<ILivingCell> result = gameOfLife.live();
 		
 		// then 
 		assertTrue(result.isEmpty());
@@ -100,18 +100,18 @@ public class GameOfLifeTest {
 	public void should_return_list_of_living_cells() {
 		// given
 		GameOfLife gameOfLife = new GameOfLife();
-		List<ICell> cells = new ArrayList<ICell>();
-		cells.add(new Cell(10, 10));
-		cells.add(new Cell(10, 11));
-		cells.add(new Cell(10, 12));
-		gameOfLife.setNewList(cells);
+		List<ILivingCell> cells = new ArrayList<ILivingCell>();
+		cells.add(new LivingCell(10, 10));
+		cells.add(new LivingCell(10, 11));
+		cells.add(new LivingCell(10, 12));
+		gameOfLife.setNewCellsList(cells);
 		
 		// when
-		List<ICell> result = gameOfLife.live();
+		List<ILivingCell> result = gameOfLife.live();
 		
 		// then 
-		assertTrue(result.contains(new Cell(9,11)));
-		assertTrue(result.contains(new Cell(11,11)));
-		assertTrue(result.contains(new Cell(10,11)));
+		assertTrue(result.contains(new LivingCell(9,11)));
+		assertTrue(result.contains(new LivingCell(11,11)));
+		assertTrue(result.contains(new LivingCell(10,11)));
 	}
 }

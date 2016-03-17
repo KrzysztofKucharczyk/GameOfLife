@@ -1,8 +1,8 @@
 import java.util.List;
 
 public interface IGameOfLife {
-	public void setNewList(List<ICell> cells);
-	public List<ICell> getLivingCells();
-	public List<ICell> live();
-	public List<ICell> getPresetCells(IInputMethod<Integer> sourceDataReader);
+	public void setNewCellsList(List<ILivingCell> cells);
+	public List<ILivingCell> getCells();
+	public List<ILivingCell> live();
+	public List<ILivingCell> getPresetCells(IInputMethod<Integer> sourceDataReader);
 }

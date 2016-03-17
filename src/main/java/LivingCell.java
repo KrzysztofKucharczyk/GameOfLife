@@ -1,9 +1,9 @@
 
-public class Cell implements ICell {
+public class LivingCell implements ILivingCell {
 
 	private int x, y;
 	
-	public Cell(int x, int y) {
+	public LivingCell(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -21,10 +21,10 @@ public class Cell implements ICell {
 		if (obj == null) {
 	        return false;
 	    }
-	    if (!Cell.class.isAssignableFrom(obj.getClass())) {
+	    if (!LivingCell.class.isAssignableFrom(obj.getClass())) {
 	        return false;
 	    }
-	    final Cell other = (Cell) obj;
+	    final LivingCell other = (LivingCell) obj;
 	    if(this.x != other.getX() || this.y != other.getY())
 	    	return false;
 

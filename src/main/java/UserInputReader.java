@@ -11,4 +11,8 @@ public class UserInputReader implements IInputMethod<String>{
 	public void closeInput() {
 		userInput.close();
 	}
+
+	public boolean hasNext() {
+		return userInput.hasNext();
+	}
 }

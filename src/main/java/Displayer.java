@@ -2,22 +2,29 @@ import java.util.List;
 
 public class Displayer implements IDisplayer {
 
-	private List<ICell> livingCells;
+	private List<ILivingCell> cells;
+	private final static int MAX_HORIZONTAL_VALUE = 70;
+	private final static int MIN_HORIZONTAL_VALUE = 20;
+	private final static String deadCellSymbol = " . ";
+	private final static String aliveCellSymbol = " O ";
+	
 
-	public Displayer(List<ICell> cellsToDisplay) {
-		this.livingCells = cellsToDisplay;
+	public Displayer(List<ILivingCell> cellsToDisplay) {
+		this.cells = cellsToDisplay;
 	}
 
 	public void display() {
 		String result = "";
-		if (!livingCells.isEmpty()) {
+		if (!cells.isEmpty()) {
 			int horizontalMin = getMinimalHorizonalLivingCellPosition();
 			int horizontalMax = getMaximalHorizonalLivingCellPosition();
 			int verticalMin = getMinimalVerticalLivingCellPosition();
 			int verticalMax = getMaximalVerticalLivingCellPosition();
 
-			if (Math.abs(horizontalMax - horizontalMin) > 15 || Math.abs(verticalMax - verticalMin) > 70)
-				System.out.println("Cells to far away from each other. Impossible to display.\nLiving cells: " + livingCells.size());
+			if (Math.abs(horizontalMax - horizontalMin) > MAX_HORIZONTAL_VALUE
+					|| Math.abs(verticalMax - verticalMin) > MIN_HORIZONTAL_VALUE)
+				System.out.println("Cells to far away from each other. Impossible to display.\nLiving cells: "
+						+ cells.size());
 			else {
 				horizontalMin -= 3;
 				horizontalMax += 3;
@@ -26,7 +33,7 @@ public class Displayer implements IDisplayer {
 
 				for (int i = horizontalMin; i < horizontalMax; i++) {
 					for (int j = verticalMin; j < verticalMax; j++)
-						result += (livingCells.contains(new Cell(i, j))) ? "1 " : "0 ";
+						result += (cells.contains(new LivingCell(i, j))) ? aliveCellSymbol : deadCellSymbol;
 					result += "\n";
 				}
 
@@ -36,37 +43,37 @@ public class Displayer implements IDisplayer {
 		}
 	}
 
-	public void setNewCellsList(List<ICell> newCells) {
-		this.livingCells = newCells;
+	public void setNewCellsList(List<ILivingCell> newCells) {
+		this.cells = newCells;
 	}
-	
+
 	private int getMinimalHorizonalLivingCellPosition() {
-		int min = livingCells.get(0).getX();
-		for (ICell cell : livingCells)
+		int min = cells.get(0).getX();
+		for (ILivingCell cell : cells)
 			if (cell.getX() < min)
 				min = cell.getX();
 		return min;
 	}
 
 	private int getMaximalHorizonalLivingCellPosition() {
-		int max = livingCells.get(0).getX();
-		for (ICell cell : livingCells)
+		int max = cells.get(0).getX();
+		for (ILivingCell cell : cells)
 			if (cell.getX() > max)
 				max = cell.getX();
 		return max;
 	}
 
 	private int getMinimalVerticalLivingCellPosition() {
-		int min = livingCells.get(0).getY();
-		for (ICell cell : livingCells)
+		int min = cells.get(0).getY();
+		for (ILivingCell cell : cells)
 			if (cell.getY() < min)
 				min = cell.getY();
 		return min;
 	}
 
 	private int getMaximalVerticalLivingCellPosition() {
-		int max = livingCells.get(0).getY();
-		for (ICell cell : livingCells)
+		int max = cells.get(0).getY();
+		for (ILivingCell cell : cells)
 			if (cell.getY() > max)
 				max = cell.getY();
 		return max;

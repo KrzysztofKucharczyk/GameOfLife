@@ -3,31 +3,31 @@ import java.util.List;
 
 public class GameOfLifeEngine implements IEngine {
 
-	private List<ICell> livingCells;
-	private List<ICell> deadCellsAroundLivingOnes;
+	private List<ILivingCell> cells;
+	private List<ILivingCell> deadCellsAroundLivingOnes;
 
-	public GameOfLifeEngine(List<ICell> cells) {
-		this.livingCells = cells;
-		deadCellsAroundLivingOnes = new ArrayList<ICell>();
+	public GameOfLifeEngine(List<ILivingCell> cells) {
+		this.cells = cells;
+		deadCellsAroundLivingOnes = new ArrayList<ILivingCell>();
 	}
 
-	public List<ICell> checkLivingCells() {
-		List<ICell> newList = new ArrayList<ICell>();
+	public List<ILivingCell> checkCells() {
+		List<ILivingCell> newList = new ArrayList<ILivingCell>();
 
-		for (ICell cell : livingCells) {
+		for (ILivingCell cell : cells) {
 			int neighbours = findAllLivingCellsAroundCoordinates(cell.getX(), cell.getY());
 			if ((neighbours == 2 || neighbours == 3))
-				newList.add(new Cell(cell.getX(), cell.getY()));
+				newList.add(new LivingCell(cell.getX(), cell.getY()));
 		}
 		return newList;
 	}
 
-	public List<ICell> reproduction() {
-		List<ICell> reproducedCells = new ArrayList<ICell>();
-		for (ICell cell : livingCells)
+	public List<ILivingCell> reproduction() {
+		List<ILivingCell> reproducedCells = new ArrayList<ILivingCell>();
+		for (ILivingCell cell : cells)
 			findAllDeadCellsAroundCoordinates(cell.getX(), cell.getY());
 
-		for (ICell cell : deadCellsAroundLivingOnes) {
+		for (ILivingCell cell : deadCellsAroundLivingOnes) {
 			if (findAllLivingCellsAroundCoordinates(cell.getX(), cell.getY()) == 3)
 				reproducedCells.add(cell);
 		}
@@ -36,53 +36,42 @@ public class GameOfLifeEngine implements IEngine {
 		return reproducedCells;
 	}
 
-	private void addToEmptySpaces(ICell cell) {
+	private void addToEmptySpaces(ILivingCell cell) {
 		if (!deadCellsAroundLivingOnes.contains(cell))
 			deadCellsAroundLivingOnes.add(cell);
 	}
 
 	private int findAllLivingCellsAroundCoordinates(int i, int j) {
 		int neighbours = 0;
-		if (livingCells.contains(new Cell(i - 1, j - 1)))
+
+		for (int xCounter = -1; xCounter <= 1; xCounter++) {
+			if (cells.contains(new LivingCell(i - xCounter, j - 1)))
+				neighbours++;
+			if (cells.contains(new LivingCell(i - xCounter, j + 1)))
+				neighbours++;
+		}
+
+		if (cells.contains(new LivingCell(i - 1, j)))
 			neighbours++;
-		if (livingCells.contains(new Cell(i, j - 1)))
+		if (cells.contains(new LivingCell(i + 1, j)))
 			neighbours++;
-		if (livingCells.contains(new Cell(i + 1, j - 1)))
-			neighbours++;
-		if (livingCells.contains(new Cell(i - 1, j)))
-			neighbours++;
-		if (livingCells.contains(new Cell(i + 1, j)))
-			neighbours++;
-		if (livingCells.contains(new Cell(i - 1, j + 1)))
-			neighbours++;
-		if (livingCells.contains(new Cell(i, j + 1)))
-			neighbours++;
-		if (livingCells.contains(new Cell(i + 1, j + 1)))
-			neighbours++;
+
 		return neighbours;
 	}
 
-	private int findAllDeadCellsAroundCoordinates(int i, int j) {
-		int neighbours = 0;
-		if (!livingCells.contains(new Cell(i - 1, j - 1)))
-			addToEmptySpaces(new Cell(i - 1, j - 1));
-		if (!livingCells.contains(new Cell(i, j - 1)))
-			addToEmptySpaces(new Cell(i, j - 1));
-		if (!livingCells.contains(new Cell(i + 1, j - 1)))
-			addToEmptySpaces(new Cell(i + 1, j - 1));
-		if (!livingCells.contains(new Cell(i - 1, j)))
-			addToEmptySpaces(new Cell(i - 1, j));
-		if (!livingCells.contains(new Cell(i + 1, j)))
-			addToEmptySpaces(new Cell(i + 1, j));
-		if (!livingCells.contains(new Cell(i - 1, j + 1)))
-			addToEmptySpaces(new Cell(i - 1, j + 1));
-		if (!livingCells.contains(new Cell(i, j + 1)))
-			addToEmptySpaces(new Cell(i, j + 1));
-		if (!livingCells.contains(new Cell(i + 1, j + 1)))
-			addToEmptySpaces(new Cell(i + 1, j + 1));
-		return neighbours;
+	private void findAllDeadCellsAroundCoordinates(int i, int j) {
+		for (int xCounter = -1; xCounter <= 1; xCounter++)
+			if (!cells.contains(new LivingCell(i - xCounter, j - 1)))
+				addToEmptySpaces(new LivingCell(i - xCounter, j - 1));
+
+		for (int xCounter = -1; xCounter <= 1; xCounter++)
+			if (!cells.contains(new LivingCell(i - xCounter, j + 1)))
+				addToEmptySpaces(new LivingCell(i - xCounter, j + 1));
+
+		if (!cells.contains(new LivingCell(i - 1, j)))
+			addToEmptySpaces(new LivingCell(i - 1, j));
+		if (!cells.contains(new LivingCell(i + 1, j)))
+			addToEmptySpaces(new LivingCell(i + 1, j));
+
 	}
-
-	// -----------------------------------
-
 }
