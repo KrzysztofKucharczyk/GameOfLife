@@ -37,10 +37,6 @@ public class GameOfLifeEngine implements IEngine {
 		return reproducedCells;
 	}
 
-	private void addToEmptySpaces(ILivingCell cell) {
-		deadCellsAroundLivingOnes.add(cell);
-	}
-
 	private int findAllLivingCellsAroundCoordinates(int i, int j) {
 		int neighbours = 0;
 
@@ -62,16 +58,16 @@ public class GameOfLifeEngine implements IEngine {
 	private void findAllDeadCellsAroundCoordinates(int i, int j) {
 		for (int xCounter = -1; xCounter <= 1; xCounter++)
 			if (!cells.contains(new LivingCell(i - xCounter, j - 1)))
-				addToEmptySpaces(new LivingCell(i - xCounter, j - 1));
+				deadCellsAroundLivingOnes.add(new LivingCell(i - xCounter, j - 1));
 
 		for (int xCounter = -1; xCounter <= 1; xCounter++)
 			if (!cells.contains(new LivingCell(i - xCounter, j + 1)))
-				addToEmptySpaces(new LivingCell(i - xCounter, j + 1));
+				deadCellsAroundLivingOnes.add(new LivingCell(i - xCounter, j + 1));
 
 		if (!cells.contains(new LivingCell(i - 1, j)))
-			addToEmptySpaces(new LivingCell(i - 1, j));
+			deadCellsAroundLivingOnes.add(new LivingCell(i - 1, j));
 		if (!cells.contains(new LivingCell(i + 1, j)))
-			addToEmptySpaces(new LivingCell(i + 1, j));
+			deadCellsAroundLivingOnes.add(new LivingCell(i + 1, j));
 
 	}
 }
