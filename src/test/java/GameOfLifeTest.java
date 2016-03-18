@@ -46,7 +46,7 @@ public class GameOfLifeTest {
 	@Test
 	public void should_get_list_of_preset_cells_from_stdin() throws FileNotFoundException {
 		// given
-		ByteArrayInputStream in = new ByteArrayInputStream("2\n1 1\n2 2".getBytes());
+		ByteArrayInputStream in = new ByteArrayInputStream("1 1\n2 2".getBytes());
 		System.setIn(in);
 		GameOfLife gameOfLife = new GameOfLife();
 		String[] args = new String[0];
@@ -67,7 +67,7 @@ public class GameOfLifeTest {
 		System.setIn(in);
 		GameOfLife gameOfLife = new GameOfLife();
 		String[] args = new String[1];
-		args[0] = "presetCellsTest.txt";
+		args[0] = "testData/presetCellsTest.txt";
 		IInputMethod<Integer> testSourceReader = new SourceDataReader(args);
 		
 		// when

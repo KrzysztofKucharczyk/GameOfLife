@@ -1,14 +1,16 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GameOfLifeEngine implements IEngine {
 
 	private List<ILivingCell> cells;
-	private List<ILivingCell> deadCellsAroundLivingOnes;
+	private Set<ILivingCell> deadCellsAroundLivingOnes;
 
 	public GameOfLifeEngine(List<ILivingCell> cells) {
 		this.cells = cells;
-		deadCellsAroundLivingOnes = new ArrayList<ILivingCell>();
+		deadCellsAroundLivingOnes = new HashSet<ILivingCell>();
 	}
 
 	public List<ILivingCell> checkCells() {
@@ -27,18 +29,16 @@ public class GameOfLifeEngine implements IEngine {
 		for (ILivingCell cell : cells)
 			findAllDeadCellsAroundCoordinates(cell.getX(), cell.getY());
 
-		for (ILivingCell cell : deadCellsAroundLivingOnes) {
+		for (ILivingCell cell : deadCellsAroundLivingOnes) 
 			if (findAllLivingCellsAroundCoordinates(cell.getX(), cell.getY()) == 3)
 				reproducedCells.add(cell);
-		}
-
+		
 		deadCellsAroundLivingOnes.clear();
 		return reproducedCells;
 	}
 
 	private void addToEmptySpaces(ILivingCell cell) {
-		if (!deadCellsAroundLivingOnes.contains(cell))
-			deadCellsAroundLivingOnes.add(cell);
+		deadCellsAroundLivingOnes.add(cell);
 	}
 
 	private int findAllLivingCellsAroundCoordinates(int i, int j) {

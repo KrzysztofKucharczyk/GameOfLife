@@ -32,6 +32,16 @@ public class LivingCell implements ILivingCell {
 	}
 	
 	@Override
+	public int hashCode() {
+		int result = 4;
+		
+		result += 31* result + new Integer(x).hashCode();
+		
+		return result;
+		
+	};
+	
+	@Override
 	public String toString() {
 		return new String("(x: " + this.x + ", y: " + y + ")");
 	}
